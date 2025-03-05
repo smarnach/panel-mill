@@ -1,0 +1,9 @@
+[project]
+name = "panel-mill"
+version = "0.1.0"
+description = "Prototype code to programmatically generate Grafana dashboards"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "grafana-foundation-sdk>=1738936587!10.1.0",
+]
