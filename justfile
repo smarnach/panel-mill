@@ -6,4 +6,4 @@ build:
 
 [working-directory: 'tf']
 deploy: build
-    GRAFANA_AUTH=$(secret-tool lookup app grafana env prod) terraform apply
+    GRAFANA_AUTH=$(secret-tool lookup app grafana env prod) terraform apply -auto-approve
