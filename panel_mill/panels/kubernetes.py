@@ -12,7 +12,7 @@ from typing import Self
 
 def pod_count(job: str) -> Timeseries:
     filters = LabelFilters('namespace="$namespace"', f'job="{job}"')
-    query = f"count(up{filters})"
+    query = f"count(avg_over_time(up{filters}[$__interval]))"
     return (
         Timeseries()
         .title("Application pods")
