@@ -27,9 +27,15 @@ class Timeseries(Panel):
             )
         return self
 
+    def with_summary_quantile_target(self, metric: str, filters: LabelFilters):
+        self.fill_opacity(10)
+        query = f"avg by(quantile) (avg_over_time({metric}{filters}[$__interval]))"
+        self.with_target(PrometheusQuery().expr(query).legend_format("__auto"))
+        return self
+
     def with_utilization_target(self, metric: str, filters: LabelFilters):
-        query = f"max_over_time({metric}{filters}[$__interval])"
         self.axis_soft_max(1)
         self.unit("percentunit")
+        query = f"max_over_time({metric}{filters}[$__interval])"
         self.with_target(PrometheusQuery().expr(query).legend_format("__auto"))
         return self
