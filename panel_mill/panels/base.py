@@ -1,5 +1,6 @@
 from panel_mill.promql import LabelFilters
 
+from grafana_foundation_sdk.builders.common import StackingConfig, VizLegendOptions
 from grafana_foundation_sdk.builders.prometheus import Dataquery as PrometheusQuery
 from grafana_foundation_sdk.builders.timeseries import Panel
 from grafana_foundation_sdk.models.dashboard import DataSourceRef
@@ -38,4 +39,24 @@ class Timeseries(Panel):
         self.unit("percentunit")
         query = f"max_over_time({metric}{filters}[$__interval])"
         self.with_target(PrometheusQuery().expr(query).legend_format("__auto"))
+        return self
+
+    def with_count_target(
+        self,
+        metric: str,
+        filters: LabelFilters,
+        by: list[str] | str | None = None,
+        legend_format: str = "__auto",
+    ):
+        self.draw_style("bars")
+        self.stacking(StackingConfig().mode(("normal")))
+        self.legend(VizLegendOptions().show_legend(True).calcs(["sum"]))
+        if isinstance(by, list):
+            query = "sum by({}) ".format(", ".join(by))
+        elif isinstance(by, str):
+            query = f"sum by({by}) "
+        else:
+            query = "sum"
+        query += f"(increase({metric}{filters}[$__interval]))"
+        self.with_target(PrometheusQuery().expr(query).legend_format(legend_format))
         return self

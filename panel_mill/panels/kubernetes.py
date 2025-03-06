@@ -2,9 +2,7 @@ from panel_mill.dashboard import Dashboard
 from panel_mill.panels.base import Timeseries
 from panel_mill.promql import LabelFilters
 
-from grafana_foundation_sdk.builders.dashboard import (
-    Row,
-)
+from grafana_foundation_sdk.builders.dashboard import Row
 from grafana_foundation_sdk.builders.prometheus import Dataquery as PrometheusQuery
 
 from typing import Self

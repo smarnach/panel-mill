@@ -7,7 +7,6 @@ from grafana_foundation_sdk.builders.dashboard import (
     Row,
 )
 from grafana_foundation_sdk.builders.prometheus import Dataquery as PrometheusQuery
-from grafana_foundation_sdk.models.common import StackingMode
 
 from typing import Self
 
@@ -28,7 +27,7 @@ def _request_rate_internal(
     return (
         Timeseries()
         .title(title)
-        .stacking(StackingConfig().mode((StackingMode.NORMAL)))
+        .stacking(StackingConfig().mode(("normal")))
         .fill_opacity(10)
         .unit("reqps")
         .with_target(PrometheusQuery().expr(query).legend_format("__auto"))
