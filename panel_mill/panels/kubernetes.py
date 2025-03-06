@@ -20,17 +20,6 @@ def pod_count(job: str) -> Timeseries:
     )
 
 
-def _utilization(title: str, filters: LabelFilters, metric: str) -> Timeseries:
-    query = f"max_over_time({metric}{filters}[$__interval])"
-    return (
-        Timeseries()
-        .title(title)
-        .axis_soft_max(1)
-        .unit("percentunit")
-        .with_target(PrometheusQuery().expr(query).legend_format("__auto"))
-    )
-
-
 def volume_utilization(volume_name: str, pod_name_regex: str) -> Timeseries:
     filters = LabelFilters(
         'namespace_name="$namespace"',
@@ -38,7 +27,11 @@ def volume_utilization(volume_name: str, pod_name_regex: str) -> Timeseries:
         f'volume_name="{volume_name}"',
     )
     metric = "kubernetes_io:pod_volume_utilization"
-    return _utilization(f"Disk utilization: {volume_name}", filters, metric)
+    return (
+        Timeseries()
+        .title(f"Disk utilization: {volume_name}")
+        .with_utilization_target(metric, filters)
+    )
 
 
 def cpu_utilization(container: str) -> Timeseries:
@@ -47,7 +40,11 @@ def cpu_utilization(container: str) -> Timeseries:
         f'container_name="{container}"',
     )
     metric = "kubernetes_io:container_cpu_request_utilization"
-    return _utilization(f"CPU request utilization", filters, metric)
+    return (
+        Timeseries()
+        .title("CPU request utilization")
+        .with_utilization_target(metric, filters)
+    )
 
 
 def memory_utilization(container: str) -> Timeseries:
@@ -57,7 +54,11 @@ def memory_utilization(container: str) -> Timeseries:
         'memory_type="non-evictable"',
     )
     metric = "kubernetes_io:container_memory_request_utilization"
-    return _utilization(f"Memory request utilization", filters, metric)
+    return (
+        Timeseries()
+        .title("Memory request utilization")
+        .with_utilization_target(metric, filters)
+    )
 
 
 class KubernetesMixin:

@@ -26,3 +26,10 @@ class Timeseries(Panel):
                 PrometheusQuery().expr(query).legend_format(f"{quantile * 100:g} %")
             )
         return self
+
+    def with_utilization_target(self, metric: str, filters: LabelFilters):
+        query = f"max_over_time({metric}{filters}[$__interval])"
+        self.axis_soft_max(1)
+        self.unit("percentunit")
+        self.with_target(PrometheusQuery().expr(query).legend_format("__auto"))
+        return self
