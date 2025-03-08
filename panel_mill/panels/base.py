@@ -34,11 +34,13 @@ class Timeseries(Panel):
         self.with_target(PrometheusQuery().expr(query).legend_format("__auto"))
         return self
 
-    def with_utilization_target(self, metric: str, filters: LabelFilters):
+    def with_utilization_target(
+        self, metric: str, filters: LabelFilters, legend_format: str = "__auto"
+    ):
         self.axis_soft_max(1)
         self.unit("percentunit")
         query = f"max_over_time({metric}{filters}[$__interval])"
-        self.with_target(PrometheusQuery().expr(query).legend_format("__auto"))
+        self.with_target(PrometheusQuery().expr(query).legend_format(legend_format))
         return self
 
     def with_count_target(

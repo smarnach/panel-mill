@@ -1,5 +1,6 @@
 from panel_mill.dashboard import Dashboard
 from panel_mill.panels.base import Timeseries
+from panel_mill.panels.cloud_sql import PostgresMixin
 from panel_mill.panels.gclb import GCLBMixin
 from panel_mill.panels.kubernetes import KubernetesMixin
 from panel_mill.promql import LabelFilters
@@ -10,7 +11,7 @@ from grafana_foundation_sdk.models.dashboard import DynamicConfigValue
 from typing import Self
 
 
-class TeckenDashboard(GCLBMixin, KubernetesMixin, Dashboard):
+class TeckenDashboard(GCLBMixin, KubernetesMixin, PostgresMixin, Dashboard):
     def __init__(self):
         super().__init__("Test dashboard: Tecken GCP")
         (
@@ -28,6 +29,7 @@ class TeckenDashboard(GCLBMixin, KubernetesMixin, Dashboard):
                 container="tecken",
             )
             .upload_metrics()
+            .postgres_panels("symbols")
         )
 
     def upload_metrics(self) -> Self:
