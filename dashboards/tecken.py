@@ -22,7 +22,7 @@ class TeckenDashboard(GCLBMixin, KubernetesMixin, PostgresMixin, Dashboard):
                 project_id="moz-fx-webservices-low-$env",
                 forwarding_rule_regex=".*symbols-${env:text}-tecken.*",
             )
-            .kubernetes_panels(
+            .k8s_panels(
                 job="tecken",
                 pod_name_regex="tecken-[^-]+-[^-]+",
                 volume_names=["uploads"],
@@ -34,15 +34,15 @@ class TeckenDashboard(GCLBMixin, KubernetesMixin, PostgresMixin, Dashboard):
 
     def upload_metrics(self) -> Self:
         filters = LabelFilters('namespace="$namespace"')
-        (
+        return (
             self.with_row(Row("Upload metrics"))
             .with_panel(
-                Timeseries()
+                self.histogram_timeseries_panel()
                 .title("KEYPANEL: Upload request times")
                 .with_summary_quantile_target("tecken_upload_archive", filters)
             )
             .with_panel(
-                Timeseries()
+                self.stacked_count_timeseries_panel()
                 .title("Count of uploads")
                 .with_count_target("tecken_upload_uploads", filters, by="try")
                 .override_by_name(
@@ -51,7 +51,7 @@ class TeckenDashboard(GCLBMixin, KubernetesMixin, PostgresMixin, Dashboard):
                 .override_by_name("True", [DynamicConfigValue("displayName", "try")])
             )
             .with_panel(
-                Timeseries()
+                self.stacked_count_timeseries_panel()
                 .title("File uploads and skips")
                 .with_count_target(
                     "tecken_upload_file_upload_upload", filters, legend_format="uploads"
@@ -61,7 +61,7 @@ class TeckenDashboard(GCLBMixin, KubernetesMixin, PostgresMixin, Dashboard):
                 )
             )
             .with_panel(
-                Timeseries()
+                self.stacked_count_timeseries_panel()
                 .title("Skip uploads early counts")
                 .with_count_target(
                     "tecken_upload_skip_early_compressed",
@@ -75,19 +75,18 @@ class TeckenDashboard(GCLBMixin, KubernetesMixin, PostgresMixin, Dashboard):
                 )
             )
             .with_panel(
-                Timeseries()
+                self.histogram_timeseries_panel()
                 .title("Time to  upload individual symbols file to GCS")
                 .with_summary_quantile_target("tecken_upload_file_upload", filters)
             )
             .with_panel(
-                Timeseries()
+                self.histogram_timeseries_panel()
                 .title("Time to Upload by Download URL")
                 .with_summary_quantile_target("tecken_upload_download_by_url", filters)
             )
             .with_panel(
-                Timeseries()
+                self.histogram_timeseries_panel()
                 .title("Dump and extract zip file to disk")
                 .with_summary_quantile_target("tecken_upload_dump_and_extract", filters)
             )
         )
-        return self
