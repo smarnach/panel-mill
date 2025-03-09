@@ -3,6 +3,7 @@ from grafana_foundation_sdk.builders.dashboard import (
     Dashboard as BaseDashboard,
     CustomVariable,
     DatasourceVariable,
+    FieldColor,
 )
 from grafana_foundation_sdk.models.dashboard import VariableHide, VariableOption
 
@@ -45,7 +46,11 @@ class Dashboard(BaseDashboard):
         return Timeseries().axis_soft_min(0).show_points("never")
 
     def histogram_timeseries_panel(self) -> Timeseries:
-        return self.timeseries_panel().fill_opacity(10)
+        return (
+            self.timeseries_panel()
+            .fill_opacity(10)
+            .color_scheme(FieldColor().mode("continuous-YlRd"))
+        )
 
     def utilization_timeseries_panel(self) -> Timeseries:
         return self.timeseries_panel().axis_soft_max(1).unit("percentunit")
