@@ -42,9 +42,9 @@ class GCLBMixin(Dashboard):
             )
         )
 
-    def gclb_panels(self, project_id: str, forwarding_rule_regex: str) -> Self:
+    def gclb_panels(self, forwarding_rule_regex: str) -> Self:
         filters = LabelFilters(
-            f'project_id="{project_id}"',
+            'project_id="$k8s_project_id"',
             f'forwarding_rule_name=~"{forwarding_rule_regex}"',
         )
         return (

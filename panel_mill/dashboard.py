@@ -17,6 +17,8 @@ class Dashboard(BaseDashboard):
     def default_variables(
         self,
         tenant: str,
+        function: str,
+        risk_level: str,
         env_realm_map: dict[str, str] | None = None,
         current_env: str = "prod",
     ) -> Self:
@@ -38,6 +40,11 @@ class Dashboard(BaseDashboard):
             .with_variable(
                 CustomVariable("project_id")
                 .values("moz-fx-$tenant-$env")
+                .hide(VariableHide.HIDE_VARIABLE)
+            )
+            .with_variable(
+                CustomVariable("k8s_project_id")
+                .values(f"moz-fx-{function}-{risk_level}-$env")
                 .hide(VariableHide.HIDE_VARIABLE)
             )
             .with_variable(

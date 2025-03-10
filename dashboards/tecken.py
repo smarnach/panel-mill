@@ -17,11 +17,10 @@ class TeckenDashboard(GCLBMixin, KubernetesMixin, PostgresMixin, RedisMixin, Das
         (
             self.uid("sven-tecken-gcp-test")
             .time("now-1d", "now")
-            .default_variables("symbols")
-            .gclb_panels(
-                project_id="moz-fx-webservices-low-$env",
-                forwarding_rule_regex=".*symbols-${env:text}-tecken.*",
+            .default_variables(
+                tenant="symbols", function="webservices", risk_level="low"
             )
+            .gclb_panels(forwarding_rule_regex=".*symbols-${env:text}-tecken.*")
             .k8s_panels(
                 job="tecken",
                 pod_name_regex="tecken-[^-]+-[^-]+",
@@ -211,7 +210,7 @@ class TeckenDashboard(GCLBMixin, KubernetesMixin, PostgresMixin, RedisMixin, Das
             .with_row(Row("Sentry"))
             .with_panel(
                 self.stacked_count_timeseries_panel()
-                .title("KEYPANEL: Sentry Scrub Errors")
+                .title("KEYPANEL: Sentry scrub errors")
                 .with_count_target("tecken_sentry_scrub_error", filters)
             )
         )
