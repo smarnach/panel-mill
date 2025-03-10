@@ -29,8 +29,8 @@ class TeckenDashboard(GCLBMixin, KubernetesMixin, PostgresMixin, RedisMixin, Das
                 container="tecken",
             )
             .app_metrics()
-            .postgres_panels("symbols")
-            .redis_panels("symbols")
+            .postgres_panels()
+            .redis_panels()
         )
 
     def app_metrics(self) -> Self:

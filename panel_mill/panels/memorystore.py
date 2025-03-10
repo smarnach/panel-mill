@@ -66,8 +66,10 @@ class RedisMixin(Dashboard):
             .with_count_target(metric, filters)
         )
 
-    def redis_panels(self, tenant: str) -> Self:
-        instance_id = f"projects/$project_id/locations/us-west1/instances/{tenant}-$env-${{env:text}}"
+    def redis_panels(self) -> Self:
+        instance_id = (
+            "projects/$project_id/locations/us-west1/instances/$tenant-$env-${env:text}"
+        )
         filters = LabelFilters(f'instance_id="{instance_id}"')
         return (
             self.with_row(Row("Memorystore (Redis)"))

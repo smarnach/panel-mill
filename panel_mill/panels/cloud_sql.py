@@ -27,7 +27,9 @@ class ClousSQLMixin(Dashboard):
             .with_target(PrometheusQuery().expr(query).legend_format("{{database_id}}"))
         )
 
-    def cloud_sql_network_bytes(self, filters: LabelFilters, direction: str) -> Timeseries:
+    def cloud_sql_network_bytes(
+        self, filters: LabelFilters, direction: str
+    ) -> Timeseries:
         metric = f"cloudsql_googleapis_com:database_network_{direction}_bytes_count"
         query = f"rate({metric}{filters}[$__rate_interval])"
         return (
@@ -59,9 +61,9 @@ class PostgresMixin(ClousSQLMixin):
             .with_target(PrometheusQuery().expr(query).legend_format("{{database_id}}"))
         )
 
-    def postgres_panels(self, tenant: str, database_id: str | None = None) -> Self:
-        if not database_id:
-            database_id = f"$project_id:{tenant}-$env-${{env:text}}-v1"
+    def postgres_panels(
+        self, database_id: str = "$project_id:$tenant-$env-${env:text}-v1"
+    ) -> Self:
         filters = LabelFilters(f'database_id="{database_id}"')
         return (
             self.with_row(Row("Cloud SQL (Postgres)"))
