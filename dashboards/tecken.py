@@ -2,6 +2,7 @@ from panel_mill.dashboard import Dashboard
 from panel_mill.panels.cloud_sql import PostgresMixin
 from panel_mill.panels.gclb import GCLBMixin
 from panel_mill.panels.kubernetes import KubernetesMixin
+from panel_mill.panels.memorystore import RedisMixin
 from panel_mill.promql import LabelFilters
 
 from grafana_foundation_sdk.builders.dashboard import Row
@@ -10,7 +11,7 @@ from grafana_foundation_sdk.models.dashboard import DynamicConfigValue
 from typing import Self
 
 
-class TeckenDashboard(GCLBMixin, KubernetesMixin, PostgresMixin, Dashboard):
+class TeckenDashboard(GCLBMixin, KubernetesMixin, PostgresMixin, RedisMixin, Dashboard):
     def __init__(self):
         super().__init__("Test dashboard: Tecken GCP")
         (
@@ -29,6 +30,7 @@ class TeckenDashboard(GCLBMixin, KubernetesMixin, PostgresMixin, Dashboard):
             )
             .app_metrics()
             .postgres_panels("symbols")
+            .redis_panels("symbols")
         )
 
     def app_metrics(self) -> Self:
@@ -92,7 +94,6 @@ class TeckenDashboard(GCLBMixin, KubernetesMixin, PostgresMixin, Dashboard):
                 .unit("s")
                 .with_summary_quantile_target("tecken_upload_dump_and_extract", filters)
             )
-
             .with_row(Row("Download metrics"))
             .with_panel(
                 self.histogram_timeseries_panel()
@@ -135,7 +136,6 @@ class TeckenDashboard(GCLBMixin, KubernetesMixin, PostgresMixin, Dashboard):
                 .unit("s")
                 .with_summary_quantile_target("tecken_upload_file_exists", filters)
             )
-
             .with_row(Row("Other application metrics"))
             .with_panel(
                 self.stacked_count_timeseries_panel()
@@ -206,7 +206,6 @@ class TeckenDashboard(GCLBMixin, KubernetesMixin, PostgresMixin, Dashboard):
                 .override_by_name("false", [DynamicConfigValue("displayName", "miss")])
                 .override_by_name("true", [DynamicConfigValue("displayName", "hit")])
             )
-
             .with_row(Row("Sentry"))
             .with_panel(
                 self.stacked_count_timeseries_panel()
