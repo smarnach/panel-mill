@@ -26,14 +26,14 @@ class Timeseries(Panel):
             )
         return self
 
-    def with_summary_quantile_target(self, metric: str, filters: LabelFilters):
+    def with_summary_quantile_target(self, metric: str, filters: LabelFilters) -> Self:
         query = f"avg by(quantile) (avg_over_time({metric}{filters}[$__interval]))"
         self.with_target(PrometheusQuery().expr(query).legend_format("__auto"))
         return self
 
     def with_utilization_target(
         self, metric: str, filters: LabelFilters, legend_format: str = "__auto"
-    ):
+    ) -> Self:
         query = f"max_over_time({metric}{filters}[$__interval])"
         self.with_target(PrometheusQuery().expr(query).legend_format(legend_format))
         return self
@@ -44,7 +44,7 @@ class Timeseries(Panel):
         filters: LabelFilters,
         by: list[str] | str | None = None,
         legend_format: str = "__auto",
-    ):
+    ) -> Self:
         if isinstance(by, list):
             query = "sum by({}) ".format(", ".join(by))
         elif isinstance(by, str):
@@ -54,3 +54,11 @@ class Timeseries(Panel):
         query += f"(increase({metric}{filters}[$__interval]))"
         self.with_target(PrometheusQuery().expr(query).legend_format(legend_format))
         return self
+
+    def with_gauge_target(
+        self, metric: str, filters: LabelFilters, legend_format: str = "__auto"
+    ) -> Self:
+        query = f"avg_over_time({metric}{filters}[$__interval])"
+        return self.with_target(
+            PrometheusQuery().expr(query).legend_format(legend_format)
+        )

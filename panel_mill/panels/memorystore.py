@@ -13,12 +13,11 @@ from typing import Self
 class RedisMixin(Dashboard):
     def redis_connections(self, filters: LabelFilters) -> Timeseries:
         metric = "redis_googleapis_com:clients_connected"
-        query = f"avg_over_time({metric}{filters}[$__interval])"
         return (
             self.timeseries_panel()
             .title("Connections")
             .legend(VizLegendOptions().show_legend(False))
-            .with_target(PrometheusQuery().expr(query))
+            .with_gauge_target(metric, filters)
         )
 
     def redis_calls_per_second(self, filters: LabelFilters) -> Timeseries:
@@ -50,12 +49,11 @@ class RedisMixin(Dashboard):
 
     def redis_cache_hit_ratio(self, filters: LabelFilters) -> Timeseries:
         metric = "redis_googleapis_com:stats_cache_hit_ratio"
-        query = f"avg_over_time({metric}{filters}[$__interval])"
         return (
             self.utilization_timeseries_panel()
             .title("Cache hit ratio")
             .legend(VizLegendOptions().show_legend(False))
-            .with_target(PrometheusQuery().expr(query))
+            .with_gauge_target(metric, filters)
         )
 
     def redis_cache_eviction_rate(self, filters: LabelFilters) -> Timeseries:
