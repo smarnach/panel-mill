@@ -31,6 +31,7 @@ class TeckenDashboard(GCLBMixin, KubernetesMixin, PostgresMixin, RedisMixin, Das
             .app_metrics()
             .cloud_sql_instance_variable()
             .postgres_panels()
+            .redis_instance_variable()
             .redis_panels()
         )
 

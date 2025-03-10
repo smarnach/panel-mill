@@ -3,8 +3,9 @@ from panel_mill.panels.base import Timeseries
 from panel_mill.promql import LabelFilters
 
 from grafana_foundation_sdk.builders.common import VizLegendOptions
-from grafana_foundation_sdk.builders.dashboard import Row
+from grafana_foundation_sdk.builders.dashboard import CustomVariable, Row
 from grafana_foundation_sdk.builders.prometheus import Dataquery as PrometheusQuery
+from grafana_foundation_sdk.models.dashboard import VariableHide
 
 from typing import Self
 
@@ -66,10 +67,18 @@ class RedisMixin(Dashboard):
             .with_count_target(metric, filters)
         )
 
-    def redis_panels(self) -> Self:
-        instance_id = (
-            "projects/$project_id/locations/us-west1/instances/$tenant-$env-${env:text}"
+    def redis_instance_variable(
+        self,
+        instance_id: str = "projects/$project_id/locations/us-west1/instances/$tenant-$env-${env:text}",
+        variable: str = "redis_instance_id",
+    ) -> Self:
+        return self.with_variable(
+            CustomVariable(variable)
+            .values(instance_id)
+            .hide(VariableHide.HIDE_VARIABLE)
         )
+
+    def redis_panels(self, instance_id: str = "$redis_instance_id") -> Self:
         filters = LabelFilters(f'instance_id="{instance_id}"')
         return (
             self.with_row(Row("Memorystore (Redis)"))
