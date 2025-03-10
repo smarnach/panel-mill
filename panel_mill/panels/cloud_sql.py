@@ -2,8 +2,9 @@ from panel_mill.dashboard import Dashboard
 from panel_mill.panels.base import Timeseries
 from panel_mill.promql import LabelFilters
 
-from grafana_foundation_sdk.builders.dashboard import Row
+from grafana_foundation_sdk.builders.dashboard import CustomVariable, Row
 from grafana_foundation_sdk.builders.prometheus import Dataquery as PrometheusQuery
+from grafana_foundation_sdk.models.dashboard import VariableHide
 
 from typing import Self
 
@@ -39,6 +40,17 @@ class ClousSQLMixin(Dashboard):
             .with_target(PrometheusQuery().expr(query).legend_format("{{database_id}}"))
         )
 
+    def cloud_sql_instance_variable(
+        self,
+        database_id: str = "$project_id:$tenant-$env-${env:text}-v1",
+        variable: str = "database_id",
+    ) -> Self:
+        return self.with_variable(
+            CustomVariable(variable)
+            .values(database_id)
+            .hide(VariableHide.HIDE_VARIABLE)
+        )
+
     def cloud_sql_panels(self, filters: LabelFilters) -> Self:
         return (
             self.with_panel(self.cloud_sql_utilization(filters, "CPU"))
@@ -61,9 +73,7 @@ class PostgresMixin(ClousSQLMixin):
             .with_target(PrometheusQuery().expr(query).legend_format("{{database_id}}"))
         )
 
-    def postgres_panels(
-        self, database_id: str = "$project_id:$tenant-$env-${env:text}-v1"
-    ) -> Self:
+    def postgres_panels(self, database_id: str = "$database_id") -> Self:
         filters = LabelFilters(f'database_id="{database_id}"')
         return (
             self.with_row(Row("Cloud SQL (Postgres)"))
