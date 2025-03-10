@@ -9,16 +9,26 @@ from typing import Self
 
 
 class KubernetesMixin(Dashboard):
-    def k8s_pod_count(self, job: str) -> Timeseries:
-        filters = LabelFilters('namespace="$namespace"', f'job="{job}"')
-        query = f"count(avg_over_time(up{filters}[$__interval]))"
+    def k8s_pod_count(self, job: str, container: str) -> Timeseries:
+        filters_count = LabelFilters('namespace="$namespace"', f'job="{job}"')
+        query = f"count(avg_over_time(up{filters_count}[$__interval]))"
+        filters_restart = LabelFilters(
+            'namespace_name="$namespace"', f'container_name="{container}"'
+        )
         return (
             self.timeseries_panel()
             .title("Application pods")
-            .with_target(PrometheusQuery().expr(query).legend_format("__auto"))
+            .with_target(PrometheusQuery().expr(query).legend_format("count"))
+            .with_count_target(
+                "kubernetes_io:container_restart_count",
+                filters_restart,
+                legend_format="restarts",
+            )
         )
 
-    def k8s_volume_utilization(self, volume_name: str, pod_name_regex: str) -> Timeseries:
+    def k8s_volume_utilization(
+        self, volume_name: str, pod_name_regex: str
+    ) -> Timeseries:
         filters = LabelFilters(
             'namespace_name="$namespace"',
             f'pod_name=~"{pod_name_regex}"',
@@ -64,7 +74,7 @@ class KubernetesMixin(Dashboard):
         container: str,
     ) -> Self:
         self.with_row(Row("Kubernetes"))
-        self.with_panel(self.k8s_pod_count(job))
+        self.with_panel(self.k8s_pod_count(job, container))
         for volume_name in volume_names:
             self.with_panel(self.k8s_volume_utilization(volume_name, pod_name_regex))
         self.with_panel(self.k8s_cpu_utilization(container))
