@@ -28,17 +28,18 @@ class TeckenDashboard(GCLBMixin, KubernetesMixin, PostgresMixin, Dashboard):
                 volume_names=["uploads"],
                 container="tecken",
             )
-            .upload_metrics()
+            .app_metrics()
             .postgres_panels("symbols")
         )
 
-    def upload_metrics(self) -> Self:
+    def app_metrics(self) -> Self:
         filters = LabelFilters('namespace="$namespace"')
         return (
             self.with_row(Row("Upload metrics"))
             .with_panel(
                 self.histogram_timeseries_panel()
                 .title("KEYPANEL: Upload request times")
+                .unit("s")
                 .with_summary_quantile_target("tecken_upload_archive", filters)
             )
             .with_panel(
@@ -77,16 +78,140 @@ class TeckenDashboard(GCLBMixin, KubernetesMixin, PostgresMixin, Dashboard):
             .with_panel(
                 self.histogram_timeseries_panel()
                 .title("Time to  upload individual symbols file to GCS")
+                .unit("s")
                 .with_summary_quantile_target("tecken_upload_file_upload", filters)
             )
             .with_panel(
                 self.histogram_timeseries_panel()
                 .title("Time to Upload by Download URL")
+                .unit("s")
                 .with_summary_quantile_target("tecken_upload_download_by_url", filters)
             )
             .with_panel(
                 self.histogram_timeseries_panel()
                 .title("Dump and extract zip file to disk")
+                .unit("s")
                 .with_summary_quantile_target("tecken_upload_dump_and_extract", filters)
+            )
+
+            .with_row(Row("Download metrics"))
+            .with_panel(
+                self.histogram_timeseries_panel()
+                .title("KEYPANEL: Download requests times")
+                .unit("s")
+                .with_summary_quantile_target("tecken_download_symbol", filters)
+            )
+            .with_panel(
+                self.stacked_count_timeseries_panel()
+                .title("Download API code id lookup (count)")
+                .with_count_target("tecken_download_symbol_code_id_lookup", filters)
+            )
+            .with_panel(
+                self.histogram_timeseries_panel()
+                .title("Age of downloaded files – regular storage")
+                .unit("d")
+                .with_summary_quantile_target(
+                    "tecken_symboldownloader_file_age_days",
+                    filters + 'storage="regular"',
+                )
+            )
+            .with_panel(
+                self.histogram_timeseries_panel()
+                .title("Age of downloaded files – try storage")
+                .unit("d")
+                .with_summary_quantile_target(
+                    "tecken_symboldownloader_file_age_days",
+                    filters + 'storage="try"',
+                )
+            )
+            .with_panel(
+                self.histogram_timeseries_panel()
+                .title("SymbolDownloader timings")
+                .unit("s")
+                .with_summary_quantile_target("tecken_symboldownloader_exists", filters)
+            )
+            .with_panel(
+                self.histogram_timeseries_panel()
+                .title("Time to find out a symbol file size in object storage")
+                .unit("s")
+                .with_summary_quantile_target("tecken_upload_file_exists", filters)
+            )
+
+            .with_row(Row("Other application metrics"))
+            .with_panel(
+                self.stacked_count_timeseries_panel()
+                .title("Requests by operation")
+                .with_count_target(
+                    "tecken_download_symbol_count", filters, legend_format="downloads"
+                )
+                .with_count_target(
+                    "tecken_upload_archive_count", filters, legend_format="uploads"
+                )
+                .with_count_target("tecken_api_count", filters, legend_format="API")
+            )
+            .with_panel(
+                self.stacked_count_timeseries_panel()
+                .title("Total time by operation")
+                .unit("s")
+                .with_count_target(
+                    "tecken_download_symbol_sum", filters, legend_format="downloads"
+                )
+                .with_count_target(
+                    "tecken_upload_archive_sum", filters, legend_format="uploads"
+                )
+                .with_count_target("tecken_api_sum", filters, legend_format="API")
+            )
+            .with_panel(
+                self.stacked_count_timeseries_panel()
+                .title("Total time by operation and pod")
+                .unit("s")
+                .with_count_target(
+                    "tecken_download_symbol_sum",
+                    filters,
+                    legend_format="downloads",
+                    by="pod",
+                )
+                .with_count_target(
+                    "tecken_upload_archive_sum",
+                    filters,
+                    legend_format="uploads",
+                    by="pod",
+                )
+                .with_count_target(
+                    "tecken_api_sum", filters, legend_format="API", by="pod"
+                )
+            )
+            .with_panel(
+                self.histogram_timeseries_panel()
+                .title("Time to compute upload stats")
+                .unit("s")
+                .with_summary_quantile_target("tecken_api_stats", filters)
+            )
+            .with_panel(
+                self.stacked_count_timeseries_panel()
+                .title("Orphaned files")
+                .with_count_target("tecken_remove_orphaned_files_delete_file", filters)
+            )
+            .with_panel(
+                self.histogram_timeseries_panel()
+                .title("Time to remove orphaned files")
+                .unit("s")
+                .with_summary_quantile_target(
+                    "tecken_remove_orphaned_files_timing", filters
+                )
+            )
+            .with_panel(
+                self.timeseries_panel()
+                .title("Syminfo cache hits/misses")
+                .with_count_target("tecken_syminfo_lookup_cached", filters, by="result")
+                .override_by_name("false", [DynamicConfigValue("displayName", "miss")])
+                .override_by_name("true", [DynamicConfigValue("displayName", "hit")])
+            )
+
+            .with_row(Row("Sentry"))
+            .with_panel(
+                self.stacked_count_timeseries_panel()
+                .title("KEYPANEL: Sentry Scrub Errors")
+                .with_count_target("tecken_sentry_scrub_error", filters)
             )
         )
