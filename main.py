@@ -5,6 +5,7 @@ from pathlib import Path
 
 ALL_DASHBOARDS = {
     "dashboards.tecken.TeckenDashboard": "tecken-gcp.json",
+    "dashboards.eliot.EliotDashboard": "eliot.json",
 }
 
 def main():

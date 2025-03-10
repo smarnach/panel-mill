@@ -211,6 +211,7 @@ class TeckenDashboard(GCLBMixin, KubernetesMixin, PostgresMixin, RedisMixin, Das
             .with_panel(
                 self.stacked_count_timeseries_panel()
                 .title("KEYPANEL: Sentry scrub errors")
+                .description("No data means no errors.")
                 .with_count_target("tecken_sentry_scrub_error", filters)
             )
         )
