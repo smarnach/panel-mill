@@ -1,5 +1,4 @@
 from panel_mill.dashboard import Dashboard
-from panel_mill.panels.base import Timeseries
 from panel_mill.panels.cloud_sql import PostgresMixin
 from panel_mill.panels.gclb import GCLBMixin
 from panel_mill.panels.kubernetes import KubernetesMixin
