@@ -38,7 +38,7 @@ class KubernetesMixin(Dashboard):
         return (
             self.utilization_timeseries_panel()
             .title(f"Disk utilization: {volume_name}")
-            .with_utilization_target(metric, filters)
+            .with_utilization_target(metric, filters, legend_format="{{pod_name}}")
         )
 
     def k8s_cpu_utilization(self, container: str) -> Timeseries:
@@ -50,7 +50,7 @@ class KubernetesMixin(Dashboard):
         return (
             self.utilization_timeseries_panel()
             .title("CPU request utilization")
-            .with_utilization_target(metric, filters)
+            .with_utilization_target(metric, filters, legend_format="{{pod_name}}")
         )
 
     def k8s_memory_utilization(self, container: str) -> Timeseries:
@@ -63,7 +63,7 @@ class KubernetesMixin(Dashboard):
         return (
             self.utilization_timeseries_panel()
             .title("Memory request utilization")
-            .with_utilization_target(metric, filters)
+            .with_utilization_target(metric, filters, legend_format="{{pod_name}}")
         )
 
     def k8s_panels(
