@@ -77,6 +77,7 @@ class Dashboard(BaseDashboard):
         return (
             self.timeseries_panel()
             .draw_style("bars")
+            .fill_opacity(100)
             .stacking(StackingConfig().mode(("normal")))
             .legend(VizLegendOptions().show_legend(True).calcs(["sum"]))
         )
