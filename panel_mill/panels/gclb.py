@@ -1,9 +1,9 @@
 from panel_mill.dashboard import Dashboard
 from panel_mill.panels.base import Timeseries
 from panel_mill.promql import LabelFilters
+from panel_mill.queries import PrometheusQuery
 
 from grafana_foundation_sdk.builders.dashboard import Row
-from grafana_foundation_sdk.builders.prometheus import Dataquery as PrometheusQuery
 
 from typing import Self
 
@@ -17,7 +17,7 @@ class GCLBMixin(Dashboard):
         return (
             self.stacked_rps_timeseries_panel()
             .title(title)
-            .with_target(PrometheusQuery().expr(query).legend_format("__auto"))
+            .with_target(PrometheusQuery().expr(query))
         )
 
     def gclb_request_rate_by_status_code(self, filters: LabelFilters) -> Timeseries:

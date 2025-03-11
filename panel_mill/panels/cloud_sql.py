@@ -1,9 +1,9 @@
 from panel_mill.dashboard import Dashboard
 from panel_mill.panels.base import Timeseries
 from panel_mill.promql import LabelFilters
+from panel_mill.queries import PrometheusQuery
 
 from grafana_foundation_sdk.builders.dashboard import CustomVariable, Row
-from grafana_foundation_sdk.builders.prometheus import Dataquery as PrometheusQuery
 from grafana_foundation_sdk.models.dashboard import VariableHide
 
 from typing import Self
