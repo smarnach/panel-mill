@@ -41,7 +41,7 @@ class KubernetesMixin(Dashboard):
             .with_utilization_target(metric, filters, legend_format="{{pod_name}}")
         )
 
-    def k8s_cpu_utilization(self, container: str) -> Timeseries:
+    def k8s_cpu_request_utilization(self, container: str) -> Timeseries:
         filters = LabelFilters(
             'namespace_name="$namespace"',
             f'container_name="{container}"',
@@ -57,7 +57,7 @@ class KubernetesMixin(Dashboard):
             .with_utilization_target(metric, filters, legend_format="{{pod_name}}")
         )
 
-    def k8s_memory_utilization(self, container: str) -> Timeseries:
+    def k8s_memory_request_utilization(self, container: str) -> Timeseries:
         filters = LabelFilters(
             'namespace_name="$namespace"',
             f'container_name="{container}"',
@@ -74,6 +74,31 @@ class KubernetesMixin(Dashboard):
             .with_utilization_target(metric, filters, legend_format="{{pod_name}}")
         )
 
+    def k8s_cpu_limit_utilization(self, container: str) -> Timeseries:
+        filters = LabelFilters(
+            'namespace_name="$namespace"',
+            f'container_name="{container}"',
+        )
+        metric = "kubernetes_io:container_cpu_limit_utilization"
+        return (
+            self.utilization_timeseries_panel()
+            .title("CPU limit utilization")
+            .with_utilization_target(metric, filters, legend_format="{{pod_name}}")
+        )
+
+    def k8s_memory_limit_utilization(self, container: str) -> Timeseries:
+        filters = LabelFilters(
+            'namespace_name="$namespace"',
+            f'container_name="{container}"',
+            'memory_type="non-evictable"',
+        )
+        metric = "kubernetes_io:container_memory_limit_utilization"
+        return (
+            self.utilization_timeseries_panel()
+            .title("Memory limit utilization")
+            .with_utilization_target(metric, filters, legend_format="{{pod_name}}")
+        )
+
     def k8s_panels(
         self,
         job: str,
@@ -85,6 +110,8 @@ class KubernetesMixin(Dashboard):
         self.with_panel(self.k8s_pod_count(job, container))
         for volume_name in volume_names:
             self.with_panel(self.k8s_volume_utilization(volume_name, pod_name_regex))
-        self.with_panel(self.k8s_cpu_utilization(container))
-        self.with_panel(self.k8s_memory_utilization(container))
+        self.with_panel(self.k8s_cpu_request_utilization(container))
+        self.with_panel(self.k8s_cpu_limit_utilization(container))
+        self.with_panel(self.k8s_memory_request_utilization(container))
+        self.with_panel(self.k8s_memory_limit_utilization(container))
         return self
