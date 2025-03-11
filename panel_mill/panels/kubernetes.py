@@ -50,6 +50,10 @@ class KubernetesMixin(Dashboard):
         return (
             self.utilization_timeseries_panel()
             .title("CPU request utilization")
+            .description(
+                "May be above 100 percent, since the limit we can use "
+                "is higher than the amount we request."
+            )
             .with_utilization_target(metric, filters, legend_format="{{pod_name}}")
         )
 
@@ -63,6 +67,10 @@ class KubernetesMixin(Dashboard):
         return (
             self.utilization_timeseries_panel()
             .title("Memory request utilization")
+            .description(
+                "May be above 100 percent, since the limit we can use "
+                "is higher than the amount we request."
+            )
             .with_utilization_target(metric, filters, legend_format="{{pod_name}}")
         )
 

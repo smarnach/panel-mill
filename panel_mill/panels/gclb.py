@@ -29,6 +29,9 @@ class GCLBMixin(Dashboard):
     def gclb_request_rate_lb_5xx(self, filters: LabelFilters) -> Timeseries:
         return self._gclb_request_rate_by_status_code(
             filters, "Load balancer 500s", "="
+        ).description(
+            "These are 500s emitted by the load balancer without sending the "
+            "request to any backend. Some of these are outside of our control."
         )
 
     def gclb_backend_latency(self, filters: LabelFilters) -> Timeseries:
