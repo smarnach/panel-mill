@@ -14,7 +14,7 @@ class EliotDashboard(GCLBMixin, KubernetesMixin, Dashboard):
     def __init__(self):
         super().__init__("Eliot")
         (
-            self.uid("eliot")
+            self.uid("sven-eliot-test")
             .time("now-1d", "now")
             .default_variables(
                 tenant="symbols", function="webservices", risk_level="low"
