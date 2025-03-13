@@ -1,5 +1,4 @@
-from panel_mill.promql import LabelFilters
-from panel_mill.queries import PrometheusQuery
+from panel_mill.promql import LabelFilters, PrometheusQuery
 
 from grafana_foundation_sdk.builders.timeseries import Panel
 from grafana_foundation_sdk.models.dashboard import DataSourceRef

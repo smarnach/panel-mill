@@ -1,7 +1,6 @@
 from panel_mill.dashboard import Dashboard
 from panel_mill.panels.base import Timeseries
-from panel_mill.promql import LabelFilters
-from panel_mill.queries import PrometheusQuery
+from panel_mill.promql import LabelFilters, PrometheusQuery
 
 from grafana_foundation_sdk.builders.common import VizLegendOptions
 from grafana_foundation_sdk.builders.dashboard import CustomVariable, Row
