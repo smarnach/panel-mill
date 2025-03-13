@@ -81,11 +81,3 @@ class Dashboard(BaseDashboard):
             .stacking(StackingConfig().mode(("normal")))
             .legend(VizLegendOptions().show_legend(True).calcs(["sum"]))
         )
-
-    def stacked_rps_timeseries_panel(self) -> Timeseries:
-        return (
-            self.timeseries_panel()
-            .fill_opacity(10)
-            .stacking(StackingConfig().mode(("normal")))
-            .unit("reqps")
-        )

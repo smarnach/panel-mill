@@ -14,10 +14,13 @@ class GCLBMixin(Dashboard):
     ) -> Timeseries:
         metric = "loadbalancing_googleapis_com:https_request_count"
         query = f"sum by(response_code) (rate({metric}{filters}[$__rate_interval]))"
+        query_total = f"sum(rate({metric}{filters}[$__rate_interval]))"
         return (
-            self.stacked_rps_timeseries_panel()
+            self.timeseries_panel()
             .title(title)
+            .unit("reqps")
             .with_target(PrometheusQuery().expr(query))
+            .with_target(PrometheusQuery().expr(query_total))
         )
 
     def gclb_request_rate_by_status_code(self, filters: LabelFilters) -> Timeseries:
