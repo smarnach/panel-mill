@@ -1,11 +1,9 @@
 from panel_mill.dashboard import Dashboard
-from panel_mill.panels.base import Timeseries
 from panel_mill.panels.gclb import GCLBMixin
 from panel_mill.panels.kubernetes import KubernetesMixin
 from panel_mill.promql import LabelFilters
 
 from grafana_foundation_sdk.builders.dashboard import Row
-from grafana_foundation_sdk.models.dashboard import DynamicConfigValue
 
 from typing import Self
 
