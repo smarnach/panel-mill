@@ -10,7 +10,7 @@ from typing import Self
 
 class EliotDashboard(GCLBMixin, KubernetesMixin, Dashboard):
     def __init__(self):
-        super().__init__("Eliot")
+        super().__init__("Test dashboard: Eliot")
         (
             self.uid("sven-eliot-test")
             .time("now-1d", "now")
