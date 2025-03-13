@@ -19,7 +19,7 @@ class GCLBMixin(Dashboard):
             .title(title)
             .unit("reqps")
             .with_target(PrometheusQuery().expr(query))
-            .with_target(PrometheusQuery().expr(query_total))
+            .with_target(PrometheusQuery().expr(query_total).legend_format("total"))
         )
 
     def gclb_request_rate_by_status_code(self, filters: LabelFilters) -> Timeseries:
